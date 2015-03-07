@@ -14,6 +14,7 @@
 #include <sstream>
 #include <stdlib.h>     
 #include <time.h>
+#include <algorithm>
 using namespace std;
 
 #define ALHPABET_SIZE 27
@@ -63,9 +64,9 @@ char shiftBy(char ch, int rot) {
 }
 
 bool readDictionary1() {
-    string fileName = "/Users/AndriyGoltsev/git/CryptProject1/project1/project1/Dictionary1.txt";
+    string fileName = "Dictionary1.txt";
     string line;
-    ifstream myfile (fileName);
+    ifstream myfile (fileName.c_str());
     if (myfile.is_open()){
         
         while ( getline (myfile,line) ) {
@@ -86,9 +87,9 @@ bool readDictionary1() {
 }
 
 bool readDictionary2() {
-    string fileName = "/Users/AndriyGoltsev/git/CryptProject1/project1/project1/Dictionary2.txt";
+    string fileName = "Dictionary2.txt";
     string line;
-    ifstream myfile (fileName);
+    ifstream myfile (fileName.c_str());
     if (myfile.is_open()){
         
         while ( getline (myfile,line) ) {
