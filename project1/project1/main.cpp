@@ -21,6 +21,7 @@ using namespace std;
 //#define CIPHER_TEXT_ALHPABET_SIZE KEY_ALHPABET_SIZE
 #define TEXT_ALPHA_START 64
 #define CIPHER_ALPHA_START 65
+#define KEY_SIZE 20
 
 vector<string> dictionary1;
 vector<string> dictionary2;
@@ -133,20 +134,23 @@ string encryptD1(int keyLen) {
     string plainText = dictionary1[rand() % dictionary1.size()];
     string cipher;
     
-    int c, p;
-    for (int i = 0; i < plainText.size(); i++) {
-        p = aton(plainText[i]);
-        
-        c = ntoa((p + key[rand() % key.size()]) % ALHPABET_SIZE );
-        
-        cipher.push_back(c);
-        
-    }
+    int c, p, k;
     
     cout << "Plain text: " << plainText << '\n';
     cout << "Key : " << ss.str() << '\n';
     cout << "Cipher text : " << cipher << '\n';
+    cout << "******* Crypto Map ********\n";
     
+    for (int i = 0; i < plainText.size(); i++) {
+        p = aton(plainText[i]);
+        k = rand() % key.size();
+        c = ntoa((p + key[k]) % ALHPABET_SIZE );
+        cout << "C(" << plainText[i] << " , " << key[k] << ")" << "\t=>\t" << c << " (" << (char)c  << ")\n";
+        
+        cipher.push_back(c);
+        
+    }
+
     return cipher;
 }
 
@@ -166,7 +170,7 @@ int main (int argc, char** argv) {
     }
     else {
     
-        keySize = 23;
+        keySize = KEY_SIZE;
         cipherText = encryptD1(keySize);//argv[2];
     }
 
