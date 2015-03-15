@@ -28,7 +28,7 @@ using namespace std;
 //#define CIPHER_TEXT_ALHPABET_SIZE KEY_ALHPABET_SIZE
 #define TEXT_ALPHA_START 64
 #define CIPHER_ALPHA_START 65
-#define KEY_SIZE 10
+#define KEY_SIZE 15
 #define MAX_THREADS 40
 #define CIPHER_TEXT_SIZE 100
 
@@ -227,6 +227,10 @@ int fitsKeyConstraint(const string& line, const string& cipherText, int myKeySiz
 }
 
 void decryptRecursive(string line, const string& cipherText, int myKeySize) {
+    
+    if (plainTextCandidates.size() > 100) {
+        return;
+    }
     
     trimToSize(line, cipherText.length());
     int status = fitsKeyConstraint(line, cipherText, myKeySize);
