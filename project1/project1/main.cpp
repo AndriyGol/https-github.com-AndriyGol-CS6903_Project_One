@@ -32,15 +32,23 @@ using namespace std;
 #define MAX_THREADS 40
 #define CIPHER_TEXT_SIZE 100
 
+typedef int (*functionJ) (int i, int t, int L);
+
 vector<string> dictionary1;
 vector<string> dictionary2;
 vector<string> plainTextCandidates;
-
+vector<functionJ> jfunctions;
 vector<string> roots;
 //int keySize;
 mutex mtx;
 
-//unsigned int getShiftNumber(char cipher, char plain);
+
+
+int j1(int i, int t, int L) { return i % t; }
+
+int j2(int i, int t, int L) { return ((i % t) + i/t) % t; }
+
+int j3(int i, int t, int L) { return rand() % t; }
 
 int aton(int c) {
     if (c == ' '){
@@ -125,9 +133,11 @@ string encrypt(string plainText, vector<int> key) {
     
     int c, p, k;
     string cipher;
+    functionJ j;
     for (int i = 0; i < plainText.size(); i++) {
         p = aton(plainText[i]);
-        k = rand() % key.size();
+        j = jfunctions[rand() % jfunctions.size()];
+        k = j(i, (int)key.size(), CIPHER_TEXT_SIZE);
         c = ntoa((p + key[k]) % ALHPABET_SIZE );
 #ifdef VERBOSE_MODE
         cout << "C(" << plainText[i] << " , " << key[k] << ")" << "\t=>\t" << c << " (" << (char)c  << ")\n";
@@ -141,9 +151,9 @@ string encrypt(string plainText, vector<int> key) {
     return cipher;
 }
 
-void trimToSize(string& text) {
-    if (text.size() > CIPHER_TEXT_SIZE)
-        text.resize(CIPHER_TEXT_SIZE);
+void trimToSize(string& text, size_t size) {
+    if (text.size() > size)
+        text.resize(size);
 }
 
 string encryptD1(int keyLen) {
@@ -169,7 +179,7 @@ string encryptD2(int keyLen) {
         plainText += " " + dictionary2[rand() % dictionary2.size()];
     }
     
-    trimToSize(plainText);
+    trimToSize(plainText, CIPHER_TEXT_SIZE);
     cipher = encrypt(plainText, key);
     
     return cipher;
@@ -218,7 +228,7 @@ int fitsKeyConstraint(const string& line, const string& cipherText, int myKeySiz
 
 void decryptRecursive(string line, const string& cipherText, int myKeySize) {
     
-    trimToSize(line);
+    trimToSize(line, cipherText.length());
     int status = fitsKeyConstraint(line, cipherText, myKeySize);
     
     if (status == 0) {
@@ -272,6 +282,10 @@ int main (int argc, char** argv) {
     
     readDictionary1();
     readDictionary2();
+    
+    jfunctions.push_back(j1);
+    jfunctions.push_back(j2);
+    jfunctions.push_back(j3);
     
 //    if(argc == 3) {
 //        keySize = atoi(argv[1]);
