@@ -292,11 +292,13 @@ int main (int argc, char** argv) {
     do {
         plainTextCandidates.clear();
         
-        cout << "Enter key size: ";
+        cout << "Enter key size >> ";
         cin >> keySize;
-        cout << "Enter cipher text: ";
+        cin.ignore();
+// uncomment for testing
+//        cout << "Test key: " << (rand() % 2 == 1 ? encryptD2(keySize) : encryptD1(keySize)) << endl;
+        cout << "Enter cipher text >> ";
         getline(cin, cipherText, '\n');
-        
         decryptD1(keySize, cipherText);
         
         if(plainTextCandidates.empty()) {
