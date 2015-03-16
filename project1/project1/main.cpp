@@ -25,10 +25,9 @@ using namespace std;
 
 #define ALHPABET_SIZE 27
 #define KEY_ALHPABET_SIZE 27
-//#define CIPHER_TEXT_ALHPABET_SIZE KEY_ALHPABET_SIZE
 #define TEXT_ALPHA_START 64
 #define CIPHER_ALPHA_START 65
-#define KEY_SIZE 15
+#define KEY_SIZE 10
 #define MAX_THREADS 40
 #define CIPHER_TEXT_SIZE 100
 
@@ -39,17 +38,15 @@ vector<string> dictionary2;
 vector<string> plainTextCandidates;
 vector<functionJ> jfunctions;
 vector<string> roots;
-//int keySize;
+
 mutex mtx;
 
 
-
 int j1(int i, int t, int L) { return i % t; }
-
 int j2(int i, int t, int L) { return ((i % t) + i/t) % t; }
-
 int j3(int i, int t, int L) { return rand() % t; }
 
+// Alpha to number
 int aton(int c) {
     if (c == ' '){
         return 0;
@@ -59,6 +56,7 @@ int aton(int c) {
     }
 }
 
+// Number to alpha
 char ntoa(int n) {
     if ( n == 0 ) {
         return ' ';
@@ -124,6 +122,7 @@ void readDictionary2() {
                 }
 }
 
+// General encrypting function.
 string encrypt(string plainText, vector<int> key) {
     
     cout << "Plain text: " << plainText << '\n';
@@ -156,6 +155,7 @@ void trimToSize(string& text, size_t size) {
         text.resize(size);
 }
 
+// Generate test cipher text from Dictionary1 with a random key of length keyLen
 string encryptD1(int keyLen) {
     
     // generate key
@@ -167,6 +167,7 @@ string encryptD1(int keyLen) {
     return cipher;
 }
 
+// Generate test cipher text from Dictionary2 with a random key of length keyLen
 string encryptD2(int keyLen) {
     
     // generate key
@@ -185,6 +186,7 @@ string encryptD2(int keyLen) {
     return cipher;
 }
 
+// Decrypt using dictionary1
 void decryptD1(int keySize, string cipherText) {
     
     
@@ -209,6 +211,10 @@ void decryptD1(int keySize, string cipherText) {
 
 }
 
+// Predicate function to check if the key fits constraint
+// return   0  - line is a valid cadidate
+//          1  - line can be a candidate
+//          -1 - line does not satifies the predicate
 int fitsKeyConstraint(const string& line, const string& cipherText, int myKeySize ) {
 
     unordered_set<int> keySet;
@@ -226,8 +232,10 @@ int fitsKeyConstraint(const string& line, const string& cipherText, int myKeySiz
     }
 }
 
+// Recursive Depth-First search function
 void decryptRecursive(string line, const string& cipherText, int myKeySize) {
     
+    // if we have too many candidates short-circuit
     if (plainTextCandidates.size() > 100) {
         return;
     }
@@ -245,6 +253,7 @@ void decryptRecursive(string line, const string& cipherText, int myKeySize) {
     }
 }
 
+// Function to be used in thread
 void decryptThread(size_t start, size_t end , const string& cipherText, int keySize) {
     
     for (size_t i = start; i < end; i++) {
@@ -253,10 +262,11 @@ void decryptThread(size_t start, size_t end , const string& cipherText, int keyS
     
 }
 
+// Decrypt using deictionary2
 void decryptD2(int keySize, string cipherText) {
     
     size_t chunkSize = roots.size() / MAX_THREADS;
-        
+
     size_t start, end;
     vector<thread> threads;
     for (size_t i = 0;  i <= MAX_THREADS; i++) {
@@ -269,7 +279,7 @@ void decryptD2(int keySize, string cipherText) {
                 if (end > roots.size()) {
                     end  = roots.size();
                 }
-            
+                // Start thread
                 threads.push_back(thread(decryptThread, start, end, cipherText, keySize));
             }
     }
@@ -291,21 +301,6 @@ int main (int argc, char** argv) {
     jfunctions.push_back(j2);
     jfunctions.push_back(j3);
     
-//    if(argc == 3) {
-//        keySize = atoi(argv[1]);
-//        cipherText = argv[2];
-//    }
-//    else {
-//        keySize = KEY_SIZE; // TODO move to main
-//        decryptD1(keySize, encryptD1(keySize));
-//        cout << "Guess: " << plainTextCandidates[rand()%plainTextCandidates.size()] << endl;
-//        
-//        plainTextCandidates.clear();
-//        decryptD2(keySize, encryptD2(keySize));
-//        cout << "Guess: " << plainTextCandidates[rand()%plainTextCandidates.size()] << endl;
-//    }
-    
-    
     
     do {
         plainTextCandidates.clear();
@@ -313,8 +308,8 @@ int main (int argc, char** argv) {
         cout << "Enter key size >> ";
         cin >> keySize;
         cin.ignore();
-// uncomment for testing
-//        cout << "Test key: " << (rand() % 2 == 1 ? encryptD2(keySize) : encryptD1(keySize)) << endl;
+        // uncomment for testing
+        // cout << "Test key: " << (rand() % 2 == 1 ? encryptD2(keySize) : encryptD1(keySize)) << endl;
         cout << "Enter cipher text >> ";
         getline(cin, cipherText, '\n');
         decryptD1(keySize, cipherText);
