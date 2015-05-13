@@ -2,7 +2,7 @@
 //  main.cpp
 //  project1
 //
-//  Created by Yu-Jung Lee and Andriy Goltsev on 3/1/15.
+//  Created by Andriy Goltsev and Yu-Jung Lee on 3/1/15.
 //  Copyright (c) 2015 Andriy Goltsev. All rights reserved.
 //
 
@@ -135,7 +135,7 @@ string encrypt(string plainText, vector<int> key) {
     functionJ j;
     for (int i = 0; i < plainText.size(); i++) {
         p = aton(plainText[i]);
-        j = jfunctions[rand() % jfunctions.size()];
+        j = jfunctions[rand() % jfunctions.size()]; // j3 for random
         k = j(i, (int)key.size(), CIPHER_TEXT_SIZE);
         c = ntoa((p + key[k]) % ALHPABET_SIZE );
 #ifdef VERBOSE_MODE
@@ -297,6 +297,8 @@ int main (int argc, char** argv) {
     readDictionary1();
     readDictionary2();
     
+    // Never finished :(((
+    // I wanted to add different algorithms testing
     jfunctions.push_back(j1);
     jfunctions.push_back(j2);
     jfunctions.push_back(j3);
@@ -309,7 +311,7 @@ int main (int argc, char** argv) {
         cin >> keySize;
         cin.ignore();
         // uncomment for testing
-        // cout << "Test key: " << (rand() % 2 == 1 ? encryptD2(keySize) : encryptD1(keySize)) << endl;
+        cout << "Test key: " << (rand() % 2 == 1 ? encryptD2(keySize) : encryptD1(keySize)) << endl;
         cout << "Enter cipher text >> ";
         getline(cin, cipherText, '\n');
         decryptD1(keySize, cipherText);
